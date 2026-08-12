@@ -1,36 +1,73 @@
--- Dream Home Real Estate - repeatable demo data
--- Reserved IDs: B900, ST9000 and CR9000. This never deletes shared course rows.
-SET DEFINE OFF;
 SET SERVEROUTPUT ON;
 
-DELETE FROM DH_STAFF WHERE STAFFNO = 'ST9000';
-DELETE FROM DH_CLIENT WHERE CLIENTNO = 'CR9000';
-DELETE FROM DH_BRANCH WHERE BRANCHNO = 'B900';
+PROMPT Removes only this project's reserved demo rows, then recreates them.
 
-INSERT INTO DH_BRANCH (BRANCHNO, STREET, CITY, POSTCODE)
-VALUES ('B900', '90 Demo Street', 'London', 'DEMO 900');
+DELETE FROM DH_STAFF
+ WHERE LOWER(EMAIL) = 'member2.demo@dreamhome.test';
 
-INSERT INTO DH_STAFF (
-  STAFFNO, FNAME, LNAME, POSITION, SEX, DOB, SALARY,
-  BRANCHNO, TELEPHONE, MOBILE, EMAIL
-)
-VALUES (
-  'ST9000', 'Demo', 'Staff', 'Assistant', NULL,
-  DATE '1990-01-15', 27500, 'B900', '020 9000 9000',
-  '07111 900000', 'demo.staff@example.com'
-);
+DELETE FROM DH_CLIENT
+ WHERE FNAME = 'Member2Demo'
+   AND LNAME = 'Client';
 
-INSERT INTO DH_CLIENT (
-  CLIENTNO, FNAME, LNAME, TELNO, STREET, CITY, EMAIL, PREFTYPE, MAXRENT
-)
-VALUES (
-  'CR9000', 'Demo', 'Client', '020 9000 9001', NULL, NULL,
-  NULL, 'House', 1500
-);
+DELETE FROM DH_BRANCH
+ WHERE BRANCHNO = 'B900';
 
 COMMIT;
 
 BEGIN
-  DBMS_OUTPUT.PUT_LINE('Demo data loaded: B900, ST9000 and CR9000');
+    new_branch(
+        p_branchno => 'B900',
+        p_street   => '900 Demo Street',
+        p_city     => 'London',
+        p_postcode => 'DE9 0MO'
+    );
 END;
 /
+
+DECLARE
+    v_staffno DH_STAFF.STAFFNO%TYPE;
+BEGIN
+    Staff_hire_sp(
+        p_first_name => 'Member2Demo',
+        p_last_name  => 'Staff',
+        p_position   => 'Assistant',
+        p_branchno   => 'B900',
+        p_dob        => DATE '2000-01-15',
+        p_salary     => 25000,
+        p_telephone  => '5559000',
+        p_mobile     => '07955590000',
+        p_email      => 'member2.demo@dreamhome.test',
+        p_staffno    => v_staffno
+    );
+    DBMS_OUTPUT.PUT_LINE('Demo staff created: ' || v_staffno);
+END;
+/
+
+DECLARE
+    v_clientno DH_CLIENT.CLIENTNO%TYPE;
+BEGIN
+    client_create_sp(
+        p_first_name => 'Member2Demo',
+        p_last_name  => 'Client',
+        p_telephone  => '5559001',
+        p_preftype   => 'House',
+        p_maxrent    => 900,
+        p_clientno   => v_clientno
+    );
+    DBMS_OUTPUT.PUT_LINE('Demo client created: ' || v_clientno);
+END;
+/
+
+PROMPT Demo rows:
+SELECT STAFFNO, FNAME, LNAME, BRANCHNO, SALARY, TELEPHONE, EMAIL
+  FROM DH_STAFF
+ WHERE LOWER(EMAIL) = 'member2.demo@dreamhome.test';
+
+SELECT BRANCHNO, STREET, CITY, POSTCODE
+  FROM DH_BRANCH
+ WHERE BRANCHNO = 'B900';
+
+SELECT CLIENTNO, FNAME, LNAME, TELNO, PREFTYPE, MAXRENT
+  FROM DH_CLIENT
+ WHERE FNAME = 'Member2Demo'
+   AND LNAME = 'Client';
