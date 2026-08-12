@@ -63,6 +63,6 @@ export function handleUnexpected(error: unknown, context: string): NextResponse<
   console.error(`[${context}]`, error);
   return fail(
     "SERVER_ERROR",
-    "The request could not be completed. Please try again, and tell the team if it keeps happening.",
+    "The request could not be completed. Please try again, and report it if it keeps happening.",
   );
 }

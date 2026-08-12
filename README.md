@@ -1,158 +1,117 @@
 # Dream Home Real Estate
 
-Next.js front end for the Dream Home Real Estate coursework application, over an
-Oracle / PL-SQL backend. Three menus - **Staff**, **Branch**, **Client** - plus a
-dashboard, all talking to the database through server-side route handlers.
+Dream Home Real Estate is a Next.js administration demo for staff, branches,
+and clients. It uses server-side route handlers, shared validation, Oracle
+PL/SQL procedures, and a safe offline mock mode. Prepared by **Royian**.
 
-> **Current state:** the website, the shared components, the API contract and
-> the route handlers are finished and tested against an in-memory mock data
-> source. The Oracle procedures (Member 2) and the node-oracledb data source
-> (Member 3) are the remaining pieces. See
-> [Where the other two members plug in](#where-the-other-two-members-plug-in).
+## Demo-ready status
 
----
+- The three assessed workflows are implemented: Staff, Branch, and Client.
+- `DATA_SOURCE=oracle` uses the server-only `oracledb` connection pool.
+- `DATA_SOURCE=mock` remains available for an offline rehearsal.
+- API errors are returned as safe messages; credentials and Oracle stack traces
+  never reach the browser.
+- The production build has a `build` script and is compatible with Vercel's
+  automatic Next.js detection.
 
-## Getting started
+## Run locally
 
 ```bash
 npm install
 ```
 
-```bash
-copy .env.example .env.local
-```
+For an offline rehearsal:
 
-Then:
-
-```bash
+```powershell
+Copy-Item .env.example .env.local
 npm run dev
 ```
 
-Open <http://localhost:3000>. It redirects to `/dashboard`.
+Open <http://localhost:3000>. The root route redirects to `/dashboard`.
 
-With `DATA_SOURCE=mock` (the default in `.env.example`) the whole application
-works with no database at all, so anyone can pull the repository and see every
-screen. The badge in the header says *Mock data* in amber; it turns green and
-says *Oracle connected* once the real data source is wired up.
+For the live Oracle demo, set these values in the ignored `.env.local` file:
 
-### Scripts
+```text
+DATA_SOURCE=oracle
+ORACLE_USER=your_username
+ORACLE_PASSWORD=your_password
+ORACLE_CONNECT_STRING=your_working_oracle_connect_string
+```
 
-| Command | What it does |
+Keep `ORACLE_PASSWORD` out of Git, screenshots, slides, and chat. The optional
+pool values and Thick-mode client path are documented in `.env.example`.
+Use the exact connect string that succeeds in SQL Developer; for the course
+connection this may be a SID descriptor for `SQLD` rather than a service name.
+
+## Database setup
+
+Run the scripts in SQL Developer as the schema owner, in this order:
+
+1. `database/10_staff_hire_sp.sql`
+2. `database/11_staff_update.sql`
+3. `database/20_new_branch.sql`
+4. `database/21_branch_address.sql`
+5. `database/22_branch_update.sql`
+6. `database/30_client_create.sql`
+7. `database/31_client_update.sql`
+8. `database/90_demo_data.sql` (optional reserved demo rows)
+9. `database/99_compile_all.sql`
+
+`database/91_reset.sql` removes only the reserved demo rows (`B900`, `ST9000`,
+and `CR9000`) when you want a clean rehearsal. It does not delete shared course
+data.
+
+## Commands
+
+| Command | Purpose |
 | --- | --- |
-| `npm run dev` | Development server with Fast Refresh |
-| `npm run build` | Production build - also runs a full TypeScript check |
-| `npm start` | Serves the production build (use this for the demo) |
-| `npm run lint` | ESLint, including the React Compiler rules |
-| `npx tsc --noEmit` | Types only, faster than a full build |
+| `npm run dev` | Local development server |
+| `npm run lint` | ESLint checks |
+| `npm run build` | Production build and TypeScript check |
+| `npm start` | Serve the production build for the demo |
 
----
+Before presenting, run `npm run lint`, `npm run build`, then `npm start` and
+walk through the dashboard, Staff, Branch, Client, and SQL Developer evidence.
 
-## What is in the repository
+## Vercel deployment
 
+This is a standard Next.js App Router project; Vercel detects the framework and
+uses the existing `npm run build` script. No `vercel.json` is required.
+
+1. Push the repository to GitHub, GitLab, or Bitbucket.
+2. In Vercel, choose **Add New Project**, import the repository, and keep the
+   detected Next.js framework and default build settings.
+3. Add the following Environment Variables in the Vercel project settings for
+   **Preview** and **Production**:
+
+   ```text
+   DATA_SOURCE=oracle
+   ORACLE_USER=your_username
+   ORACLE_PASSWORD=your_password
+   ORACLE_CONNECT_STRING=your_working_oracle_connect_string
+   ORACLE_POOL_MIN=1
+   ORACLE_POOL_MAX=4
+   ORACLE_POOL_INCREMENT=1
+   ```
+
+4. Deploy, open `/api/health`, and confirm `dataSource` is `oracle` and
+   `connected` is `true` before demonstrating writes.
+
+The Oracle host must allow connections from the deployed Vercel function. If
+the course database is restricted to the campus network, use the local
+production demo (`npm run build && npm start`) or obtain an instructor-approved
+hosted database instead of exposing credentials or bypassing the firewall.
+
+## Repository layout
+
+```text
+app/                    pages and API route handlers
+components/             reusable layout, forms, tables, and feedback UI
+lib/                    types, validation, API client, and data sources
+database/               Oracle procedures and repeatable demo scripts
+docs/                   API contract, decisions, and QA checklist
 ```
-app/
-  dashboard/            main menu, architecture summary, demo running order
-  staff/                UI-2  hire + view & update
-  branches/             UI-3  address lookup + open branch + view & update
-  clients/              UI-4  register + view & update
-  api/                  route handlers - the only place that touches data
-components/
-  layout/               AppShell, MainNavigation, ConnectionStatus, PageHeader
-  form/                 FormField, SelectField, DateField, CurrencyField, FormActions
-  data/                 EditableDataTable
-  ui/                   StatusAlert, LoadingButton, EmptyState, ConfirmDialog,
-                        TabPanels, SectionCard
-  staff/ branches/ clients/   the per-domain forms, tables and workspaces
-hooks/                  useRecords - list loading, error and refresh-after-save
-lib/
-  types.ts              shared domain + transport types (the contract)
-  validation.ts         Zod schemas used by BOTH the browser and the server
-  api-client.ts         typed fetch wrappers; pages never call fetch directly
-  format.ts             currency / date display helpers
-  constants.ts          dropdown values and business limits
-  server/               contracts.ts, data-source.ts, mock-data-source.ts, http.ts
-database/               Member 2's PL/SQL (see database/README.md)
-docs/                   API contract, decision log, test checklist
-```
 
-### How a request travels
-
-1. A form component validates with the shared Zod schema and shows field errors
-   immediately.
-2. It calls a typed function in `lib/api-client.ts`, which never throws - it
-   resolves to `{ ok: true, data }` or `{ ok: false, message, code, fieldErrors }`.
-3. The route handler in `app/api/...` runs the **same schema again** (the server
-   is the final authority) and calls the data source.
-4. The data source - mock today, Oracle next - performs the work and returns
-   plain objects.
-5. The page shows a success banner and refreshes its list, or renders the error
-   on the exact field that caused it.
-
-The browser never connects to Oracle. Credentials live only in `.env.local`,
-which is git-ignored; `.env.example` holds the variable names.
-
----
-
-## Where the other two members plug in
-
-### Member 2 - Oracle / PL-SQL
-
-Everything is in [`database/README.md`](database/README.md) and the column map
-in [`docs/api-contract.md`](docs/api-contract.md) section 3. The open questions
-that block front-end details are listed at the bottom of
-[`docs/decision-log.md`](docs/decision-log.md) - answering them is a one-file
-change here in each case.
-
-### Member 3 - API integration
-
-`lib/server/contracts.ts` defines `DreamHomeDataSource`, the twelve methods the
-route handlers call. To connect Oracle:
-
-1. Add `lib/server/oracle-data-source.ts` implementing that interface with a
-   node-oracledb pool and bind variables.
-2. Throw `new DataError("NOT_FOUND" | "DUPLICATE" | "DATABASE_ERROR", message)`
-   for expected failures - the handlers already map those to 404 / 409 / 500.
-3. In `lib/server/data-source.ts`, swap the placeholder `throw` for the import.
-4. Set `DATA_SOURCE=oracle` in `.env.local`.
-
-`oracledb` is already declared in `serverExternalPackages` in `next.config.ts`,
-and every route sets `runtime = "nodejs"`.
-
-No page or component changes when this happens - that was the point of freezing
-the contract in Week 1.
-
----
-
-## Demonstration route
-
-The dashboard prints this list on screen so nobody has to remember it.
-
-1. **Dashboard** - three menus, live record counts, connection badge.
-2. **Staff** - hire a member using the nine `Staff_hire_sp` inputs; the banner
-   shows the generated staff number; switch to *View & update* and change the
-   salary; confirm the old → new dialog.
-3. **Branch** - look up `B003` and read street plus city; try `B999` to show the
-   error path; open a branch; edit its city.
-4. **Client** - register a client; change the preferred property type and the
-   maximum rent in one save.
-5. **Evidence** - show the same rows in SQL Developer.
-
-Run the demo from `npm run build && npm start`, not `npm run dev`.
-
----
-
-## Accessibility and responsiveness
-
-* Every input is labelled and wired to its error text with `aria-describedby`;
-  invalid inputs carry `aria-invalid`.
-* Errors use `role="alert"`, successes use `role="status"`.
-* Tabs follow the WAI-ARIA pattern, including arrow-key navigation.
-* The confirm dialog moves focus to the confirm button, closes on Escape, and
-  returns focus to the trigger.
-* Nothing depends on colour alone; a skip link is the first tab stop.
-* Verified at 375 px: no horizontal page scroll - wide tables scroll inside
-  their own container.
-
-Test results are recorded in
-[`docs/frontend-test-checklist.md`](docs/frontend-test-checklist.md); the Oracle
-column of that table is filled in once the real connection exists.
+The browser never connects directly to Oracle. Only server route handlers import
+the Oracle adapter, and all writes use bind variables and controlled PL/SQL
+procedures.

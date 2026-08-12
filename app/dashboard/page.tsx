@@ -7,6 +7,7 @@ import { SectionCard } from "@/components/ui/section-card";
 export const metadata: Metadata = {
   title: "Dashboard",
   description: "Main menu for the Staff, Branch and Client areas.",
+  authors: [{ name: "Royian" }],
 };
 
 const DEMO_STEPS = [
@@ -77,11 +78,12 @@ export default function DashboardPage() {
             <code className="mx-1 rounded bg-white px-1 py-0.5 font-mono">.env.local</code>
             on the server, which is excluded from Git.
           </p>
+          <p className="mt-3 text-xs font-semibold text-indigo-700">Prepared by Royian</p>
         </SectionCard>
 
         <SectionCard
           title="Demonstration order"
-          description="The route the team walks through in the live demo."
+          description="The route to follow in the live demo."
         >
           <ol className="space-y-2 text-sm text-slate-700">
             {DEMO_STEPS.map((step, index) => (

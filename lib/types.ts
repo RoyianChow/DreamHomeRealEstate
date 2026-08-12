@@ -4,7 +4,7 @@
  * These types are the single contract between the browser, the server route
  * handlers, and the Oracle repository layer. Field names here are the JSON
  * names; the Oracle column names they map to are listed in
- * docs/api-contract.md so Member 2 and Member 3 bind to the same fields.
+ * docs/api-contract.md so the UI and Oracle adapter bind to the same fields.
  */
 
 /* ------------------------------------------------------------------ Staff */
@@ -119,7 +119,7 @@ export type ApiResult<T> =
 
 /** Payload of GET /api/health - drives the connection badge in the header. */
 export type HealthStatus = {
-  /** "oracle" once Member 3's pool is wired up, "mock" during UI development. */
+  /** "oracle" for the live database, "mock" for offline demonstration. */
   dataSource: "oracle" | "mock";
   connected: boolean;
   /** Short description shown next to the badge, e.g. "DH_XXXX @ oracle-lab". */

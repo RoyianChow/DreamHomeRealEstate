@@ -59,7 +59,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <footer className="no-print border-t border-slate-200 bg-white">
         <div className="mx-auto max-w-6xl px-4 py-4 text-xs text-slate-500 sm:px-6">
           Dream Home Real Estate · Next.js front end over an Oracle / PL-SQL
-          backend · Coursework demonstration build
+          backend · Coursework demonstration build · Prepared by Royian
         </div>
       </footer>
     </div>

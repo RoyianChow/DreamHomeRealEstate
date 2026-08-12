@@ -1,11 +1,16 @@
 # Front-end test checklist (QA-2, Royian)
 
-Run the whole list before each milestone and once more in the final 48 hours,
-first against `DATA_SOURCE=mock`, then against the real Oracle connection.
+Run the whole list before the demo, first against `DATA_SOURCE=mock`, then
+against the real Oracle connection.
 Record the date and the result; screenshots of the failures are the useful ones.
 
-Legend: ✅ passing on the mock data source as of the first build ·
-☐ still to run against Oracle.
+Legend: ✅ passing on the mock data source · ☐ still to run or record against
+Oracle.
+
+Latest automated smoke check (2026-08-12): `/api/health`, `/api/staff`,
+`/api/branches`, and `/api/clients` returned 200 from the live Oracle mode;
+`/api/branches/B999/address` returned the expected 404. The full browser flow
+and SQL Developer procedure evidence still need one manual rehearsal.
 
 ## Global
 

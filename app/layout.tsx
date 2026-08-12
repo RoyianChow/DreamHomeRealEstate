@@ -7,8 +7,9 @@ export const metadata: Metadata = {
     default: "Dream Home Real Estate",
     template: "%s · Dream Home Real Estate",
   },
+  authors: [{ name: "Royian" }],
   description:
-    "Staff, branch and client administration for Dream Home Real Estate, built with Next.js over an Oracle / PL-SQL backend.",
+    "Staff, branch and client administration for Dream Home Real Estate, built by Royian with Next.js over an Oracle / PL-SQL backend.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

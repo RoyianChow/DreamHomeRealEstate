@@ -37,8 +37,8 @@ yarn-error.log*
 # vercel
 .vercel
 
-# per-machine assistant settings (launch.json is shared, this one is not)
-.claude/settings.local.json
+# local assistant settings
+.claude/
 
 # typescript
 *.tsbuildinfo

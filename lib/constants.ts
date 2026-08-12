@@ -1,9 +1,8 @@
 /**
  * Reference values used by the forms.
  *
- * OPEN ITEM (see docs/decision-log.md, FE-01): the staff position list and the
- * postcode rules are placeholders until Member 2 confirms the DH_STAFF and
- * DH_BRANCH check constraints. Editing this file is the only change needed.
+ * These values match the positions present in the confirmed DH_STAFF data.
+ * There is no database check constraint requiring any additional position.
  */
 
 import type { PropertyType } from "@/lib/types";
@@ -14,7 +13,6 @@ export const STAFF_POSITIONS: Option[] = [
   { value: "Manager", label: "Manager" },
   { value: "Supervisor", label: "Supervisor" },
   { value: "Assistant", label: "Assistant" },
-  { value: "Deputy", label: "Deputy" },
 ];
 
 export const PROPERTY_TYPES: { value: PropertyType; label: string }[] = [

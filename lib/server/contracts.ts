@@ -2,7 +2,7 @@
  * The server-side contract every data source must satisfy.
  *
  * ROLE BOUNDARY (see docs/api-contract.md): the route handlers depend only on
- * this interface. Member 3 adds the Oracle-backed implementation - node-oracledb
+ * this interface. The Oracle-backed implementation uses node-oracledb
  * pool, bind variables, commit/rollback - and returns it from `getDataSource()`
  * in data-source.ts. Nothing in app/ or components/ changes when that happens.
  */

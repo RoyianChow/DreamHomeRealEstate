@@ -1,8 +1,7 @@
 # Decision log
 
 One line per decision, so nothing important lives only in chat. Add new rows at
-the bottom. `FE-` = front end (Royian), `DB-` = database (Member 2), `API-` =
-integration (Member 3).
+the bottom. This is the final solo implementation record for Royian.
 
 ## Confirmed instructor decisions (from the project plan)
 
@@ -19,7 +18,7 @@ integration (Member 3).
 
 | ID | Decision | Reason |
 | --- | --- | --- |
-| FE-01 | Staff positions are a fixed dropdown (`Manager`, `Supervisor`, `Assistant`, `Deputy`) in `lib/constants.ts`. | A free-text position would fail a check constraint at insert time. **Open: Member 2 to confirm the real allowed values.** |
+| FE-01 | Staff positions are a fixed dropdown (`Manager`, `Supervisor`, `Assistant`) in `lib/constants.ts`. | These are the confirmed values in the available DH_STAFF data. |
 | FE-02 | One route per domain (`/staff`, `/branches`, `/clients`), each with tabs, rather than a page per action. | Matches the recommended page design in the plan and keeps the demo to four screens. |
 | FE-03 | The interface is locked to a light theme (`color-scheme: light`). | The demo runs on an unknown machine and projector; an automatic dark-mode flip is a risk with no upside for marking. |
 | FE-04 | Money and dates are formatted for display only (`lib/format.ts`); the raw number and `yyyy-mm-dd` string are what get sent. | Avoids locale parsing problems on the way into Oracle. |
@@ -29,16 +28,16 @@ integration (Member 3).
 | FE-08 | The front end ships with a mock data source (`DATA_SOURCE=mock`) behind the same interface Oracle will use. | Week 1 exit gate: the UI is buildable and demonstrable before the database is connected, exactly as the plan requires. |
 | FE-09 | No authentication, no user accounts. | INS-6. |
 
-## Open questions
+## Resolved implementation notes
 
 | ID | Question | Who | Needed by |
 | --- | --- | --- | --- |
-| Q-1 | Exact `DH_STAFF` column names, nullability and check constraints (especially `POSITION`). | Member 2 | Before the staff slice is called done |
-| Q-2 | Which `STAFFNO` generator was chosen, and how collisions are prevented. | Member 2 | Week 2 |
-| Q-3 | Does `DH_BRANCH` hold a postcode column? The form and table assume `street`, `city`, `postcode`. | Member 2 | Week 3 |
-| Q-4 | Does `new_branch` take the branch number as an input, or generate one? The form currently asks the user for it. | Member 2 | Week 3 |
-| Q-5 | Is `DH_CLIENT.PREFTYPE` limited to `House` / `Flat`, or are there more values? | Member 2 | Week 3 |
-| Q-6 | Does the client table hold an email column that registration should collect? | Member 2 | Week 3 |
+| Q-1 | Exact DH_STAFF columns and nullability | Confirmed from SQL Developer screenshots; `SEX` is nullable and not collected by the form. |
+| Q-2 | STAFFNO generator | `DH_STAFFNO_SEQ` generates `ST1000`-style IDs inside `Staff_hire_sp`. |
+| Q-3 | DH_BRANCH postcode column | Confirmed as `POSTCODE`. |
+| Q-4 | new_branch inputs | The branch number is supplied by the user and checked by the primary key. |
+| Q-5 | DH_CLIENT.PREFTYPE values | Confirmed values are `House` and `Flat`. |
+| Q-6 | Client email | The confirmed client schema has no email column; registration does not collect it. |
 
-Each of these is a one-file change on the front end: Q-1/Q-5 in
-`lib/constants.ts`, Q-3/Q-4/Q-6 in `lib/types.ts` plus the matching form.
+The final implementation is documented in the numbered SQL scripts and the API
+contract; no member handoff remains.

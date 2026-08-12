@@ -20,9 +20,11 @@ export async function GET() {
       dataSource: process.env.DATA_SOURCE === "oracle" ? "oracle" : "mock",
       connected: false,
       detail:
-        error instanceof Error
-          ? error.message
-          : "The data source could not be reached.",
+        process.env.DATA_SOURCE === "oracle"
+          ? "Oracle database could not be reached."
+          : error instanceof Error
+            ? error.message
+            : "The data source could not be reached.",
       checkedAt: new Date().toISOString(),
     };
     return ok(status);

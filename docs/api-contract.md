@@ -1,11 +1,11 @@
 # API contract (deliverable P0-3)
 
-Owners: Member 3 (API Integration & QA Lead) and Royian (Website / Frontend Lead).
+Owner: Royian.
 Status: **implemented and in use by the front end.** Change it by editing this
-file and `lib/types.ts` together, then telling the other two members.
+file and `lib/types.ts` together.
 
 The front end already calls every endpoint below through `lib/api-client.ts`.
-Member 3 can therefore replace the data source without touching any page.
+The Oracle adapter can therefore be changed without touching any page.
 
 ---
 
@@ -134,9 +134,8 @@ to this question. It drives the connection badge in the header.
 
 ## 3. JSON field → Oracle column map
 
-**Member 2: please confirm or correct this column list from the schema map
-(P0-1) and tell the team about any that differ.** The JSON names above stay the
-same either way; only the mapping inside the data source changes.
+The column list below was confirmed from the SQL Developer schema screenshots.
+The JSON names stay stable; only the mapping inside the data source changes.
 
 | Entity | JSON field | Expected column | Notes |
 | --- | --- | --- | --- |
@@ -172,15 +171,15 @@ same either way; only the mapping inside the data source changes.
 
 ---
 
-## 5. How Member 3 plugs Oracle in
+## 5. Oracle data source
 
-1. Create `lib/server/oracle-data-source.ts` exporting an object that implements
-   `DreamHomeDataSource` from `lib/server/contracts.ts`.
-2. Throw `new DataError("NOT_FOUND" | "DUPLICATE" | "DATABASE_ERROR", message)`
-   for expected failures; the route handlers map those to status codes.
-3. In `lib/server/data-source.ts`, replace the placeholder `throw` with the
-   import and return.
-4. Set `DATA_SOURCE=oracle` in `.env.local`.
+1. `lib/server/oracle-data-source.ts` implements `DreamHomeDataSource` using a
+   server-only node-oracledb pool.
+2. Expected failures use `DataError`; route handlers map them to status codes.
+3. `lib/server/data-source.ts` selects the Oracle adapter when
+   `DATA_SOURCE=oracle`.
+4. Set the Oracle values in `.env.local` (or Vercel project environment
+   variables).
 
 Nothing in `app/` or `components/` changes. The badge in the header flips from
 amber "Mock data" to green "Oracle connected" and the pages carry on working.

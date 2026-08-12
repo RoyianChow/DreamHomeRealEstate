@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
   },
 
   // node-oracledb is a native module: it must stay external to the bundle and
-  // is only ever imported from server code (Member 3's data source).
+  // is only ever imported from server code (the Oracle data source).
   serverExternalPackages: ["oracledb"],
 };
 

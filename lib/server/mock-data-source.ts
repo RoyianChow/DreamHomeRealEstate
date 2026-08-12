@@ -2,8 +2,7 @@
  * In-memory stand-in for the Oracle schema.
  *
  * WHY THIS EXISTS: the delivery plan freezes the API contract in Week 1 so the
- * website can be built against mock responses while the PL/SQL and the Oracle
- * endpoints are still in progress. This file is the mock. It is never used
+ * website can be demonstrated offline without Oracle. This file is the mock. It is never used
  * when DATA_SOURCE=oracle, and it contains no database code of any kind.
  *
  * It deliberately reproduces the rules the database will enforce - duplicate
@@ -138,7 +137,7 @@ const settle = () => new Promise((resolve) => setTimeout(resolve, 180));
 const key = (value: string) => value.trim().toUpperCase();
 
 /**
- * Mock STAFFNO generator. The real generator is Member 2's decision (sequence,
+ * Mock STAFFNO generator. The live generator is the Oracle sequence,
  * trigger, or a MAX+1 lookup inside Staff_hire_sp) - the UI only requires that
  * the value comes back in the insert response, never that it has a shape.
  */

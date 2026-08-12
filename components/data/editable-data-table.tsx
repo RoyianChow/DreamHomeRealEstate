@@ -51,7 +51,6 @@ type Props<T> = {
   onSave?: (row: T, changes: Record<string, string>) => Promise<SaveOutcome>;
   /** Note above the table explaining which columns may be changed. */
   editNote?: string;
-  confirmBeforeSave?: boolean;
 };
 
 function readValue<T>(row: T, key: string): unknown {
@@ -78,7 +77,6 @@ export function EditableDataTable<T>({
   emptyDescription = "Records added through this application appear here.",
   onSave,
   editNote,
-  confirmBeforeSave = true,
 }: Props<T>) {
   const [editingKey, setEditingKey] = useState<string | null>(null);
   const [draft, setDraft] = useState<Record<string, string>>({});
@@ -126,11 +124,7 @@ export function EditableDataTable<T>({
       return;
     }
     setRowMessage(null);
-    if (confirmBeforeSave) {
-      setPendingConfirm(true);
-    } else {
-      void commitSave();
-    }
+    setPendingConfirm(true);
   }
 
   async function commitSave() {
